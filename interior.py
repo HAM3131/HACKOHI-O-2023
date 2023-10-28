@@ -76,6 +76,7 @@ class Space:
             # For example, we might calculate distance between the nodes and put that in the connection_data
             # before adding the connection, or if one of the two says that the connection is "going up", then
             # that will need to be changed to "going down" for the other node
+
             self.__nodes[name1].add_connection(name2, connection_data)
             self.__nodes[name2].add_connection(name1, connection_data)
 
@@ -91,8 +92,8 @@ class Space:
             name1.remove_connection(name2)
             name2.remove_connection(name1)
     
-    def node_distance(self, name1, name2):
-        if (not (self.__nodes[name1].connection_exists(name2) or self.__nodes[name2].connection_exists(name1))):
+    def node_distance(self, name1, name2, disable_warning=False):
+        if (not (self.__nodes[name1].connection_exists(name2) or self.__nodes[name2].connection_exists(name1)) and not disable_warning):
             print("[*] You are calculating the distance between two nodes which aren't connected")
         (x1, y1, z1) = self.__nodes[name1].get_position()
         (x2, y2, z2) = self.__nodes[name2].get_position()
