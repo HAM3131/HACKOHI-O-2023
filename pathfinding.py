@@ -67,19 +67,27 @@ def pathFindingAlgorithm(nodeSpace, startNode, endNode):
         
 
 def quickCon(space, a, b):
-    space.add_connection(a,b,{'distance':space.node_distance(a,b,True)})
+    space.add_connection(a,b)
 
 
 testSpace2 = Space()
-for i in range(100):
-    for j in range(100):
-        testSpace2.add_node(str(i) + "," + str(j), {'x':i,'y':j,'z':0}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
-for i in range(100):
-    for j in range(100):
-        if i > 0:
-            quickCon(testSpace2,str(i-1)+','+str(j),str(i)+','+str(j))
-        if j > 0:
-            quickCon(testSpace2,str(i)+','+str(j-1),str(i)+','+str(j))
+for k in range(2):
+    for i in range(100):
+        for j in range(100):
+            if i == 33 and j == 66:
+                testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k,'type':'elevator','mult':1.5})
+            else:
+                testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
 
-path = pathFindingAlgorithm(testSpace2, "0,0", "99,99")
+    for i in range(100):
+        for j in range(100):
+            if i > 0:
+                quickCon(testSpace2,str(i-1)+','+str(j)+','+str(k),str(i)+','+str(j)+','+str(k))
+            if j > 0:
+                quickCon(testSpace2,str(i)+','+str(j-1)+','+str(k),str(i)+','+str(j)+','+str(k))
+
+quickCon(testSpace2, '33,66,0','33,66,1')
+quickCon(testSpace2, '98,3,0','98,3,1')
+
+path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
 testSpace2.plot_space_highlight(path[0])
