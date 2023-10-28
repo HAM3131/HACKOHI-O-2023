@@ -1,0 +1,135 @@
+import numpy as np
+from interior import *
+
+def addBinaryValue(binList, bVal, rVal, min, max):
+    if max == min:
+        binList.insert(min, (bVal, rVal))
+        return True # Success
+    elif max < min:
+        return False # Failure
+    checkLocation = (max-min)//2 + min
+    checkVal = binList[checkLocation][0]
+    if bVal > checkVal:
+        return addBinaryValue(binList, bVal, rVal, checkLocation + 1, max)
+    elif bVal < checkVal:
+        return addBinaryValue(binList, bVal, rVal, min, checkLocation)
+    else:
+        return addBinaryValue(binList, bVal, rVal, checkLocation, checkLocation)
+
+
+
+def pathFindingAlgorithm(nodeSpace, startNode, endNode):
+    nodeList = nodeSpace.get_nodes()
+    unvisitedNodes = [(0,startNode)]
+    unvisitedDistDict = {startNode: 0}
+    parentList = {}
+    visitedList = []
+
+    finalDist = 0
+
+    loopBool = True
+    while loopBool:
+        if len(unvisitedNodes) == 0:
+            print("Ran out of nodes")
+            break
+        curNodeInfo = unvisitedNodes[0]
+        visitedList.append(unvisitedNodes.pop(0)[1])
+        curNodeDist = curNodeInfo[0]
+        curNodeName = curNodeInfo[1]
+        if curNodeName == endNode:
+            print("Done! Distance is", curNodeDist)
+            finalDist = curNodeDist
+            break
+        curNodeConnections = nodeList[curNodeInfo[1]].get_connections()
+        for connectionName, connectionData in curNodeConnections.items():
+            if connectionName in visitedList:
+                continue
+            newConDist = connectionData['distance'] + curNodeDist
+            if connectionName in unvisitedDistDict:
+                oldDistance = unvisitedDistDict[connectionName]
+                if oldDistance > newConDist:
+                    parentList[connectionName] = curNodeName
+                    unvisitedDistDict[connectionName] = newConDist
+                    unvisitedNodes.remove((oldDistance, connectionName))
+                    addBinaryValue(unvisitedNodes, newConDist, connectionName, 0, len(unvisitedNodes))
+            else:
+                parentList[connectionName] = curNodeName
+                unvisitedDistDict[connectionName] = newConDist
+                addBinaryValue(unvisitedNodes, newConDist, connectionName, 0, len(unvisitedNodes))
+    finalNodeList = [endNode]
+    nextNode = endNode
+    while True:
+        nextNode = parentList[nextNode]
+        finalNodeList.insert(0, nextNode)
+        if nextNode == startNode:
+            break
+    print(finalNodeList, finalDist)
+    return (finalNodeList, finalDist)
+        
+
+def quickCon(space, a, b):
+    space.add_connection(a,b,{'distance':space.node_distance(a,b,True)})
+
+
+testSpace2 = Space()
+for i in range(10):
+    for j in range(10):
+        testSpace2.add_node(str(i) + "," + str(j), {'x':i,'y':j,'z':0})
+for i in range(10):
+    for j in range(10):
+        if i > 0:
+            quickCon(testSpace2,str(i-1)+','+str(j),str(i)+','+str(j))
+        if j > 0:
+            quickCon(testSpace2,str(i)+','+str(j-1),str(i)+','+str(j))
+
+
+pathFindingAlgorithm(testSpace2, "0,0", "9,9")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
