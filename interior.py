@@ -252,16 +252,3 @@ class Space:
         )
 
         fig.show()
-
-space = Space()
-space.add_node("a", {"x": 0, "y": 0, "z": 0})
-space.add_node("b", {"x": 1, "y": 0, "z": 0})
-space.add_node("c", {"x": 1, "y": 1, "z": 0})
-space.add_node("d", {"x": 0, "y": 1, "z": 0})
-
-space.add_connection("a", "b", {})
-space.add_connection("b", "c", {})
-space.add_connection("c", "d", {})
-space.add_connection("d", "a", {})
-
-space.plot_space_highlight(["a","b","c"])

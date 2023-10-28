@@ -63,7 +63,6 @@ def pathFindingAlgorithm(nodeSpace, startNode, endNode):
         finalNodeList.insert(0, nextNode)
         if nextNode == startNode:
             break
-    print(finalNodeList, finalDist)
     return (finalNodeList, finalDist)
         
 
@@ -72,15 +71,15 @@ def quickCon(space, a, b):
 
 
 testSpace2 = Space()
-for i in range(10):
-    for j in range(10):
-        testSpace2.add_node(str(i) + "," + str(j), {'x':i,'y':j,'z':0})
-for i in range(10):
-    for j in range(10):
+for i in range(100):
+    for j in range(100):
+        testSpace2.add_node(str(i) + "," + str(j), {'x':i,'y':j,'z':0}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+for i in range(100):
+    for j in range(100):
         if i > 0:
             quickCon(testSpace2,str(i-1)+','+str(j),str(i)+','+str(j))
         if j > 0:
             quickCon(testSpace2,str(i)+','+str(j-1),str(i)+','+str(j))
 
-
-pathFindingAlgorithm(testSpace2, "0,0", "9,9")
+path = pathFindingAlgorithm(testSpace2, "0,0", "99,99")
+testSpace2.plot_space_highlight(path[0])
