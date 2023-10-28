@@ -70,7 +70,7 @@ class Node:
         return (self.__data['x'], self.__data['y'], self.__data['z'])
     
     def get_type(self):
-        return (self.__data.get('type', 'other'))
+        return (self.__data.get('type', NodeType.OTHER))
     
     def get_mult(self):
         return (self.__data.get('mult', 1))
@@ -95,6 +95,13 @@ class Space:
             print("[X] There is already a node by that name")
         else: 
             self.__nodes[name] = Node(name, data)
+
+    def remove_node(self, name):
+        remNode = self.get_node(name)
+        connections = [x for x in remNode.get_connections().keys()]
+        for connection in connections:
+            self.remove_connection(name, connection)
+
 
     def add_connection(self, name1, name2):
         valid_request = True
@@ -125,8 +132,8 @@ class Space:
             valid_request = False
             print(f"[X] Tried to remove connection with nonexistent node {name2}")
         if (valid_request):
-            name1.remove_connection(name2)
-            name2.remove_connection(name1)
+            self.get_node(name1).remove_connection(name2)
+            self.get_node(name2).remove_connection(name1)
     
     def node_distance(self, name1, name2, disable_warning=False):
         if (not (self.__nodes[name1].connection_exists(name2) or self.__nodes[name2].connection_exists(name1)) and not disable_warning):
@@ -410,9 +417,12 @@ def path_to_string(space, path):
 
 def blacklistedSpaceCopy(mainSpace, blacklist):
     newSpace = copy.deepcopy(mainSpace)
-    nodeList = newSpace.nodes()
+    nodeList = newSpace.get_nodes()
+    removeList = []
     for nodeName, node in nodeList.items():
-        for connectionName in node.get_connections().keys():
-            if newSpace.get_node(connectionName).get_type() in blacklist:
-                newSpace.remove_connection(connectionName, nodeName)
+        if node.get_type() in blacklist:
+            removeList.append(nodeName)
+    for remNode in removeList:
+        newSpace.remove_node(remNode)
+    print(newSpace.get_nodes().keys())
     return newSpace
