@@ -1,9 +1,9 @@
-from enum import IntEnum
-from math import sqrt, floor, atan2
+from enum import StrEnum
+from math import sqrt, floor, atan2, degrees
 import plotly.graph_objects as go
 import random
 
-class NodeType(IntEnum):
+class NodeType(StrEnum):
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
     ROOM        = "room"
     STAIRS      = "stairs"
@@ -15,12 +15,32 @@ class NodeType(IntEnum):
     OUTSIDE     = "outside"
     OTHER       = "other"
 
-
 class Node:
     def __init__(self, name, data):
         self.__name = name
         self.__data = data
         self.__connections = {}
+
+    def print(self):
+        type = self.get_type()
+        if (type == NodeType.ROOM):
+            return f"{self.__name}"
+        elif (type == NodeType.STAIRS):
+            return f"the {self.__name}"
+        elif (type == NodeType.ELEVATOR):
+            return f"the {self.__name}"
+        elif (type == NodeType.ESCALATOR):
+            return f"the {self.__name}"
+        elif (type == NodeType.DOOR):
+            return f"the {self.__name}"
+        elif (type == NodeType.HALLWAY):
+            return f"the {self.__name}"
+        elif (type == NodeType.EXIT):
+            return f"the {self.__name}"
+        elif (type == NodeType.OUTSIDE):
+            return f"{self.name}"
+        elif (type == NodeType.OTHER):
+            return f"{self.name}"
     
     def add_connection(self, name, data):
         if (name in self.__connections):
@@ -116,6 +136,13 @@ class Space:
         (dx, dy, dz) = (x2-x1, y2-y1, z2-z1)
         return sqrt(dx*dx + dy*dy + dz*dz)
     
+    def node_y_distance(self, name1, name2, disable_warning=False):
+        if (not (self.__nodes[name1].connection_exists(name2) or self.__nodes[name2].connection_exists(name1)) and not disable_warning):
+            print("[*] You are calculating the distance between two nodes which aren't connected")
+        (_, y1, _) = self.__nodes[name1].get_position()
+        (_, y2, _) = self.__nodes[name2].get_position()
+        return y2-y1
+    
     def get_intermediate_direction(self, node1_name, node2_name):
         if node1_name not in self.__nodes or node2_name not in self.__nodes:
             return "Invalid node names"
@@ -144,6 +171,25 @@ class Space:
             return "Northwest"
         else:
             return "North"
+        
+    def get_clock_direction(self, node1_name, node2_name, node3_name):
+        if any(name not in self.__nodes for name in [node1_name, node2_name, node3_name]):
+            return "Invalid node names"
+
+        x1, y1, _ = self.__nodes[node1_name].get_position()
+        x2, y2, _ = self.__nodes[node2_name].get_position()
+        x3, y3, _ = self.__nodes[node3_name].get_position()
+
+        angle1 = degrees(atan2(y2 - y1, x2 - x1)) % 360
+        angle2 = degrees(atan2(y3 - y1, x3 - x1)) % 360
+
+        clock_angle = (angle2 - angle1 + 360) % 360
+        clock_direction = round(clock_angle / 30) % 12
+
+        if clock_direction == 0:
+            return "12 o'clock"
+        else:
+            return f"{clock_direction} o'clock"
     
     def plot_space(self):
         # Initialize lists to store node and edge coordinates
@@ -304,11 +350,23 @@ def path_to_string(space, path):
         node = space.get_node(name)
         node_type = node.get_type()
         if (i == 0):
-            direction = space.node_direction(name, path[1])
-            route += f"First, face {direction} towards {path[1]}.\n"
+            direction = space.get_intermediate_direction(name, path[1])
+            route += f"First, face {direction} towards {space.get_node(path[1]).print()}.\n"
         if (i == len(path)-1):
             route += "You have arrived at your destination!"
 
         if (node_type == NodeType.ROOM):
-            route += f"Enter {name} and find the {path[i+1]}.\n"
-            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.node_direction(path[i-1], path[i+1])}"
+            route += f"Enter {node.print()} and find {space.get_node(path[i+1]).print()}.\n"
+            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], path[i+1])}"
+        elif (node_type == NodeType.STAIRS):
+            if (space.get_node(path[i-1]).get_type != NodeType.STAIRS):
+                flights = 0
+                direction = "up" if (space.node_y_distance(name, path[i+1]) > 0) else "down"
+                next_node = space.get_node(path[i+1+flights])
+                while (next_node.get_type() == NodeType.STAIRS):
+                    flights += 1
+                    next_node = path[i+1+flights]
+                if flights > 0:
+                    route += f"Head {direction} {flights} flights of stairs to {next_node.print()}"
+                else: 
+                    route += f"Go to the "
