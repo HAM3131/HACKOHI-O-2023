@@ -171,3 +171,97 @@ class Space:
     )
 
         fig.show()
+
+    def plot_space_highlight(self, highlight_nodes):
+        # Initialize lists to store node and edge coordinates
+        x_nodes, y_nodes, z_nodes = [], [], []
+        x_edges, y_edges, z_edges = [], [], []
+        x_highlight, y_highlight, z_highlight = [], [], []
+        x_highlight_edges, y_highlight_edges, z_highlight_edges = [], [], []
+
+        # Populate node coordinates
+        for name, node in self.__nodes.items():
+            x, y, z = node.get_position()
+            if name in highlight_nodes:
+                x_highlight.append(x)
+                y_highlight.append(y)
+                z_highlight.append(z)
+            else:
+                x_nodes.append(x)
+                y_nodes.append(y)
+                z_nodes.append(z)
+
+        # Populate edge coordinates
+        for name1, node1 in self.__nodes.items():
+            x1, y1, z1 = node1.get_position()
+            for name2 in node1.get_connections():
+                x2, y2, z2 = self.__nodes[name2].get_position()
+                if name1 in highlight_nodes and name2 in highlight_nodes:
+                    x_highlight_edges.extend([x1, x2, None])
+                    y_highlight_edges.extend([y1, y2, None])
+                    z_highlight_edges.extend([z1, z2, None])
+                else:
+                    x_edges.extend([x1, x2, None])
+                    y_edges.extend([y1, y2, None])
+                    z_edges.extend([z1, z2, None])
+
+        # Create a scatter plot for nodes with blue color
+        scatter = go.Scatter3d(x=x_nodes, y=y_nodes, z=z_nodes, mode='markers', marker=dict(size=8, color='blue'))
+
+        # Create a scatter plot for highlighted nodes with red color
+        scatter_highlight = go.Scatter3d(x=x_highlight, y=y_highlight, z=z_highlight, mode='markers', marker=dict(size=8, color='red'))
+
+        # Create a line plot for edges with white color
+        lines = go.Scatter3d(x=x_edges, y=y_edges, z=z_edges, mode='lines', line=dict(color='white'))
+
+        # Create a line plot for highlighted edges with yellow color
+        lines_highlight = go.Scatter3d(x=x_highlight_edges, y=y_highlight_edges, z=z_highlight_edges, mode='lines', line=dict(color='yellow'))
+
+        # Create the 3D plot
+        fig = go.Figure(data=[scatter, lines, scatter_highlight, lines_highlight])
+
+        # Customize the layout
+        fig.update_layout(
+            scene=dict(
+                zaxis=dict(
+                    showbackground=False,
+                    showticklabels=False,
+                    showgrid=False,
+                    zeroline=False,
+                    title=''
+                ),
+                yaxis=dict(
+                    showbackground=False,
+                    showticklabels=False,
+                    showgrid=False,
+                    zeroline=False,
+                    title=''
+                ),
+                xaxis=dict(
+                    showbackground=False,
+                    showticklabels=False,
+                    showgrid=False,
+                    zeroline=False,
+                    title=''
+                ),
+                bgcolor='black'
+            ),
+            paper_bgcolor='black',
+            plot_bgcolor='black',
+            scene_camera=dict(eye=dict(x=1.5, y=1.5, z=1.5))
+        )
+
+        fig.show()
+
+space = Space()
+space.add_node("a", {"x": 0, "y": 0, "z": 0})
+space.add_node("b", {"x": 1, "y": 0, "z": 0})
+space.add_node("c", {"x": 1, "y": 1, "z": 0})
+space.add_node("d", {"x": 0, "y": 1, "z": 0})
+
+space.add_connection("a", "b", {})
+space.add_connection("b", "c", {})
+space.add_connection("c", "d", {})
+space.add_connection("d", "a", {})
+
+space.plot_space_highlight(["a","b","c"])
