@@ -1,10 +1,9 @@
-from enum import StrEnum
 from math import sqrt, floor, atan2, degrees
 import plotly.graph_objects as go
 import random
 import copy
 
-class NodeType(StrEnum):
+class NodeType():
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
     ROOM        = "room"
     STAIRS      = "stairs"
@@ -191,6 +190,15 @@ class Space:
             return "12 o'clock"
         else:
             return f"{clock_direction} o'clock"
+        
+    def hallway_is_intersection(self, name):
+        node = self.get_node(name)
+        hallway_connections = 0
+        for connection_name in node.get_connections().keys():
+            connected_node = self.get_node(connection_name)
+            if connected_node.get_type() == NodeType.HALLWAY:
+                hallway_connections += 1
+        return hallway_connections > 2
     
     def plot_space(self):
         # Initialize lists to store node and edge coordinates
@@ -358,7 +366,7 @@ def path_to_string(space, path):
 
         if (node_type == NodeType.ROOM):
             route += f"Enter {node.print()} and find {space.get_node(path[i+1]).print()}.\n"
-            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], path[i+1])}"
+            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
         elif (node_type == NodeType.STAIRS):
             if (space.get_node(path[i-1]).get_type != NodeType.STAIRS):
                 flights = 0
@@ -368,9 +376,37 @@ def path_to_string(space, path):
                     flights += 1
                     next_node = path[i+1+flights]
                 if flights > 0:
-                    route += f"Head {direction} {flights} flights of stairs to {next_node.print()}"
+                    route += f"Head {direction} {flights} flights of stairs to {next_node.print()} in {space.get_node(path[i+flights]).print()}.\n"
                 else: 
-                    route += f"Go to the "
+                    route += f"Go to {next_node.print()}.\n"
+        elif (node_type == NodeType.ELEVATOR):
+            route += f"Use {node.print()} to get to {space.get_node(path[i+1])}.\n"
+        elif (node_type == NodeType.ESCALATOR):
+            route += f"Go up {node.print()}.\n"
+        elif (node_type == NodeType.DOOR):
+            route += f"Go through {node.print()} to {space.get_node(path[i+1]).print()}"
+        elif (node_type == NodeType.HALLWAY):
+            if (not space.get_node(path[i-1]).get_type == NodeType.HALLWAY or space.hallway_is_intersection(name)):
+                direction = space.get_clock_direction(path[i-1], name, path[i+1])
+                hallway_steps = 0
+                next_node = space.get_node(path[i+1+hallway_steps])
+                while (next_node == NodeType.HALLWAY):
+                    intersection = space.hallway_is_intersection(path[i+1+hallway_steps])
+                    if (intersection):
+                        break
+                    else:
+                        hallway_steps += 1
+                        next_node = space.get_node(path[i+1+hallway_steps])
+                route += f"Turn to your {direction} and head straight through {node.print()} for {space.node_distance(name, path[i+hallway_steps])} {space.units}.\n"
+        elif (node_type == NodeType.EXIT):
+            route += f"Exit through {node.print()}.\n"
+        elif (node_type == NodeType.OUTSIDE):
+            route += f"Go through {node.print()} to {space.get_node(path[i+1].print())}.\n"
+            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
+        elif (node_type == NodeType.OTHER):
+            route += f"Use {node.print} to reach {{space.get_node(path[i+1].print())}}.\n"
+            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
+    return route
 
 def blacklistedSpaceCopy(mainSpace, blacklist):
     newSpace = copy.deepcopy(mainSpace)
