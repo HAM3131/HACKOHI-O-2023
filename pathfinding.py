@@ -1,5 +1,6 @@
 import numpy as np
 from interior import *
+import copy
 
 def addBinaryValue(binList, bVal, rVal, min, max):
     if max == min:
@@ -75,9 +76,13 @@ for k in range(2):
     for i in range(100):
         for j in range(100):
             if i == 33 and j == 66:
-                testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k,'type':'elevator','mult':1.5})
+                testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k,'type':NodeType.ELEVATOR,'mult':1.5})
             else:
-                testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+                if i*j % 7 == 5:
+                    testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k, 'type':NodeType.OTHER}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+                else:
+                    testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k, 'type':NodeType.HALLWAY}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+
 
     for i in range(100):
         for j in range(100):
@@ -89,5 +94,9 @@ for k in range(2):
 quickCon(testSpace2, '33,66,0','33,66,1')
 quickCon(testSpace2, '98,3,0','98,3,1')
 
-path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
-testSpace2.plot_space_highlight(path[0])
+#path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
+#testSpace2.plot_space_highlight(path[0])
+
+testSpace3 = blacklistedSpaceCopy(testSpace2, [NodeType.OTHER])
+path2 = pathFindingAlgorithm(testSpace3, "0,0,0", "99,99,1")
+testSpace3.plot_space_highlight(path2[0])

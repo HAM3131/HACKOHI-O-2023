@@ -2,6 +2,7 @@ from enum import IntEnum
 from math import sqrt, floor, atan2
 import plotly.graph_objects as go
 import random
+import copy
 
 class NodeType(IntEnum):
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
@@ -312,3 +313,15 @@ def path_to_string(space, path):
         if (node_type == NodeType.ROOM):
             route += f"Enter {name} and find the {path[i+1]}.\n"
             route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.node_direction(path[i-1], path[i+1])}"
+
+
+def blacklistedSpaceCopy(mainSpace, blacklist):
+    newSpace = copy.deepcopy(mainSpace)
+    nodeList = newSpace.nodes()
+    for nodeName, node in nodeList.items():
+        for connectionName in node.get_connections().keys():
+            if newSpace.get_node(connectionName).get_type() in blacklist:
+                newSpace.remove_connection(connectionName, nodeName)
+    return newSpace
+
+
