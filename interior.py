@@ -1,7 +1,7 @@
 from enum import IntEnum
-from math import sqrt
+from math import sqrt, floor
 import plotly.graph_objects as go
-
+import random
 
 class SpaceMode(IntEnum):
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
@@ -128,8 +128,8 @@ class Space:
 
         # Create a Surface plot for the Z-plane
         plane = go.Surface(
-            x=[-2, 2],
-            y=[-2, 2],
+            x=[0, 10],
+            y=[0, 10],
             z=[[-0.5,-0.5],[-0.5,-0.5]],
             colorscale=[[0, 'gray'], [1, 'gray']],  # set plane color to gray
             showscale=False  # hide the color scale
@@ -170,12 +170,3 @@ class Space:
     )
 
         fig.show()
-
-space = Space()
-space.add_node("A", {'x': 0, 'y': 0, 'z': 0})
-space.add_node("B", {'x': 1, 'y': 1, 'z': 1})
-space.add_node("C", {'x': 2, 'y': 0, 'z': 1})
-space.add_connection("A", "B", {})
-space.add_connection("A", "C", {})
-space.add_connection("B", "C", {})
-space.plot_space()
