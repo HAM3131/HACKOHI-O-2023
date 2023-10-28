@@ -1,5 +1,7 @@
 from enum import IntEnum
 from math import sqrt
+import plotly.graph_objects as go
+
 
 class SpaceMode(IntEnum):
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
@@ -96,3 +98,84 @@ class Space:
         (x2, y2, z2) = self.__nodes[name2].get_position()
         (dx, dy, dz) = (x2-x1, y2-y1, z2-z1)
         return sqrt(dx*dx + dy*dy + dz*dz)
+    
+    def plot_space(self):
+        # Initialize lists to store node and edge coordinates
+        x_nodes, y_nodes, z_nodes = [], [], []
+        x_edges, y_edges, z_edges = [], [], []
+
+        # Populate node coordinates
+        for _, node in self.__nodes.items():
+            x, y, z = node.get_position()
+            x_nodes.append(x)
+            y_nodes.append(y)
+            z_nodes.append(z)
+
+        # Populate edge coordinates
+        for _, node1 in self.__nodes.items():
+            x1, y1, z1 = node1.get_position()
+            for name2 in node1.get_connections():
+                x2, y2, z2 = self.__nodes[name2].get_position()
+                x_edges.extend([x1, x2, None])
+                y_edges.extend([y1, y2, None])
+                z_edges.extend([z1, z2, None])
+
+        # Create a scatter plot for nodes with blue color
+        scatter = go.Scatter3d(x=x_nodes, y=y_nodes, z=z_nodes, mode='markers', marker=dict(size=8, color='blue'))
+
+        # Create a line plot for edges with white color
+        lines = go.Scatter3d(x=x_edges, y=y_edges, z=z_edges, mode='lines', line=dict(color='white'))
+
+        # Create a Surface plot for the Z-plane
+        plane = go.Surface(
+            x=[-2, 2],
+            y=[-2, 2],
+            z=[[-0.5,-0.5],[-0.5,-0.5]],
+            colorscale=[[0, 'gray'], [1, 'gray']],  # set plane color to gray
+            showscale=False  # hide the color scale
+        )
+
+        # Create the 3D plot
+        fig = go.Figure(data=[scatter, lines, plane])
+
+        # Customize the layout
+        fig.update_layout(
+        scene=dict(
+            zaxis=dict(
+                showbackground=False,  # Show z-axis plane
+                showticklabels=False,  # Hide tick labels
+                showgrid=False,  # Hide grid lines
+                zeroline=False,  # Hide zero line
+                title=''
+            ),
+            yaxis=dict(
+                showbackground=False,  # Hide y-axis plane
+                showticklabels=False,  # Hide tick labels
+                showgrid=False,  # Hide grid lines
+                zeroline=False,  # Hide zero line
+                title=''
+            ),
+            xaxis=dict(
+                showbackground=False,  # Hide x-axis plane
+                showticklabels=False,  # Hide tick labels
+                showgrid=False,  # Hide grid lines
+                zeroline=False,  # Hide zero line
+                title=''
+            ),
+            bgcolor='black'  # Black background
+        ),
+        paper_bgcolor='black',  # Black surrounding background
+        plot_bgcolor='black',  # Black grid background
+        scene_camera=dict(eye=dict(x=1.5, y=1.5, z=1.5))  # Adjust camera
+    )
+
+        fig.show()
+
+space = Space()
+space.add_node("A", {'x': 0, 'y': 0, 'z': 0})
+space.add_node("B", {'x': 1, 'y': 1, 'z': 1})
+space.add_node("C", {'x': 2, 'y': 0, 'z': 1})
+space.add_connection("A", "B", {})
+space.add_connection("A", "C", {})
+space.add_connection("B", "C", {})
+space.plot_space()
