@@ -42,6 +42,12 @@ class Node:
     
     def get_position(self):
         return (self.__data['x'], self.__data['y'], self.__data['z'])
+    
+    def get_type(self):
+        return (self.__data.get('type', 'other'))
+    
+    def get_mult(self):
+        return (self.__data.get('mult', 1))
 
 
 class Space:
@@ -63,7 +69,7 @@ class Space:
         else: 
             self.__nodes[name] = Node(name, data)
 
-    def add_connection(self, name1, name2, connection_data):
+    def add_connection(self, name1, name2):
         valid_request = True
         if (not name1 in self.__nodes):
             valid_request = False
@@ -76,7 +82,10 @@ class Space:
             # For example, we might calculate distance between the nodes and put that in the connection_data
             # before adding the connection, or if one of the two says that the connection is "going up", then
             # that will need to be changed to "going down" for the other node
-
+            connection_data = {}
+            baseDistance = self.node_distance(name1, name2, True)
+            realDistance = min(self.get_node(name1).get_mult(), self.get_node(name2).get_mult()) * baseDistance
+            connection_data['distance'] = realDistance
             self.__nodes[name1].add_connection(name2, connection_data)
             self.__nodes[name2].add_connection(name1, connection_data)
 
