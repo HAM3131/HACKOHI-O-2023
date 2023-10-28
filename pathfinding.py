@@ -91,12 +91,13 @@ for k in range(2):
             if j > 0:
                 quickCon(testSpace2,str(i)+','+str(j-1)+','+str(k),str(i)+','+str(j)+','+str(k))
 
-quickCon(testSpace2, '33,66,0','33,66,1')
-quickCon(testSpace2, '98,3,0','98,3,1')
+if __name__ == 'main':
+    quickCon(testSpace2, '33,66,0','33,66,1')
+    quickCon(testSpace2, '98,3,0','98,3,1')
 
-#path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
-#testSpace2.plot_space_highlight(path[0])
+    #path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
+    #testSpace2.plot_space_highlight(path[0])
 
-testSpace3 = blacklistedSpaceCopy(testSpace2, [NodeType.OTHER])
-path2 = pathFindingAlgorithm(testSpace3, "0,0,0", "99,99,1")
-testSpace3.plot_space_highlight(path2[0])
+    testSpace3 = blacklistedSpaceCopy(testSpace2, [NodeType.OTHER])
+    path2 = pathFindingAlgorithm(testSpace3, "0,0,0", "99,99,1")
+    testSpace3.plot_space_highlight(path2[0])
