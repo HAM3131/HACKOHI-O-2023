@@ -1,14 +1,20 @@
 from enum import IntEnum
-from math import sqrt, floor
+from math import sqrt, floor, atan2
 import plotly.graph_objects as go
 import random
 
-class SpaceMode(IntEnum):
+class NodeType(IntEnum):
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
-    FLAT       = 0b0001
-    SLOPED     = 0b0010
-    STAIRS     = 0b0100
-    ELEVATOR   = 0b1000
+    ROOM        = "room"
+    STAIRS      = "stairs"
+    ELEVATOR    = "elevator"
+    ESCALATOR   = "escalator"
+    DOOR        = "door"
+    HALLWAY     = "hallway"
+    EXIT        = "exit"
+    OUTSIDE     = "outside"
+    OTHER       = "other"
+
 
 class Node:
     def __init__(self, name, data):
@@ -45,8 +51,9 @@ class Node:
 
 
 class Space:
-    def __init__(self):
+    def __init__(self, units="feet"):
         self.__nodes = {}
+        self.units = units
 
     def get_nodes(self):
         return self.__nodes
@@ -99,6 +106,35 @@ class Space:
         (x2, y2, z2) = self.__nodes[name2].get_position()
         (dx, dy, dz) = (x2-x1, y2-y1, z2-z1)
         return sqrt(dx*dx + dy*dy + dz*dz)
+    
+    def get_intermediate_direction(self, node1_name, node2_name):
+        if node1_name not in self.__nodes or node2_name not in self.__nodes:
+            return "Invalid node names"
+
+        x1, y1, _ = self.__nodes[node1_name].get_position()
+        x2, y2, _ = self.__nodes[node2_name].get_position()
+
+        dx = x2 - x1
+        dy = y2 - y1
+
+        angle = (180 / 3.14159) * (atan2(dy, dx) % (2 * 3.14159))
+
+        if 22.5 <= angle < 67.5:
+            return "Northeast"
+        elif 67.5 <= angle < 112.5:
+            return "East"
+        elif 112.5 <= angle < 157.5:
+            return "Southeast"
+        elif 157.5 <= angle < 202.5:
+            return "South"
+        elif 202.5 <= angle < 247.5:
+            return "Southwest"
+        elif 247.5 <= angle < 292.5:
+            return "West"
+        elif 292.5 <= angle < 337.5:
+            return "Northwest"
+        else:
+            return "North"
     
     def plot_space(self):
         # Initialize lists to store node and edge coordinates
@@ -252,3 +288,18 @@ class Space:
         )
 
         fig.show()
+
+def path_to_string(space, path):
+    route = ""
+    for i, name in enumerate(path):
+        node = space.get_node(name)
+        node_type = node.get_type()
+        if (i == 0):
+            direction = space.node_direction(name, path[1])
+            route += f"First, face {direction} towards {path[1]}.\n"
+        if (i == len(path)-1):
+            route += "You have arrived at your destination!"
+
+        if (node_type == NodeType.ROOM):
+            route += f"Enter {name} and find the {path[i+1]}.\n"
+            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.node_direction(path[i-1], path[i+1])}"
