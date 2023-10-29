@@ -79,6 +79,9 @@ class Node:
     
     def get_mult(self):
         return (self.__data.get('mult', 1))
+    
+    def get_name(self):
+        return self.__data.get('hName', self.__name)
 
 
 class Space:
@@ -223,12 +226,12 @@ class Space:
         node_names = []
 
         # Populate node coordinates
-        for name, node in self.__nodes.items():
+        for _, node in self.__nodes.items():
             x, y, z = node.get_position()
             x_nodes.append(x)
             y_nodes.append(y)
             z_nodes.append(z)
-            node_names.append(name)
+            node_names.append(node.get_name())
 
         # Populate edge coordinates
         for _, node1 in self.__nodes.items():
@@ -296,6 +299,8 @@ class Space:
         x_edges, y_edges, z_edges = [], [], []
         x_highlight, y_highlight, z_highlight = [], [], []
         x_highlight_edges, y_highlight_edges, z_highlight_edges = [], [], []
+        node_names = []
+        node_names_h = []
 
         # Populate node coordinates
         for name, node in self.__nodes.items():
@@ -304,10 +309,12 @@ class Space:
                 x_highlight.append(x)
                 y_highlight.append(y)
                 z_highlight.append(z)
+                node_names_h.append(node.get_name())
             else:
                 x_nodes.append(x)
                 y_nodes.append(y)
                 z_nodes.append(z)
+                node_names.append(node.get_name())
 
         # Populate edge coordinates
         for name1, node1 in self.__nodes.items():
@@ -324,10 +331,10 @@ class Space:
                     z_edges.extend([z1, z2, None])
 
         # Create a scatter plot for nodes with blue color
-        scatter = go.Scatter3d(x=x_nodes, y=y_nodes, z=z_nodes, mode='markers', marker=dict(size=8, color='blue'))
+        scatter = go.Scatter3d(x=x_nodes, y=y_nodes, z=z_nodes, mode='markers', marker=dict(size=8, color='blue'),text=node_names)
 
         # Create a scatter plot for highlighted nodes with red color
-        scatter_highlight = go.Scatter3d(x=x_highlight, y=y_highlight, z=z_highlight, mode='markers', marker=dict(size=8, color='red'))
+        scatter_highlight = go.Scatter3d(x=x_highlight, y=y_highlight, z=z_highlight, mode='markers', marker=dict(size=8, color='red'),text=node_names_h)
 
         # Create a line plot for edges with white color
         lines = go.Scatter3d(x=x_edges, y=y_edges, z=z_edges, mode='lines', line=dict(color='white'))
