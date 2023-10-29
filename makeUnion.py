@@ -10,7 +10,6 @@ X, Y = np.meshgrid(x,y)
 z = (X+Y)/(2+np.cos(X)*np.sin(Y))*0
 
 img = io.imread('UnionFloor1.jpg',)
-io.imshow(img)
 
 pl_grey =[[0.0, 'rgb(0, 0, 0)'],
     [0.05, 'rgb(13, 13, 13)'],
@@ -39,7 +38,7 @@ surfcolor = np.fliplr(img[:,:,0])
 surf = go.Surface(x=x, y=y, z=z,
                   surfacecolor=surfcolor,
                   colorscale=pl_grey,
-                  showscale=True)
+                  showscale=False)
 
 
 
