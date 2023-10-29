@@ -1,8 +1,33 @@
 from math import sqrt, floor, atan2, degrees
 import plotly.graph_objects as go
 from plotly.io import to_html
+from skimage import io
 import random
+from numpy import np
 import copy
+
+pl_grey =[[0.0, 'rgb(0, 0, 0)'],
+    [0.05, 'rgb(13, 13, 13)'],
+    [0.1, 'rgb(29, 29, 29)'],
+    [0.15, 'rgb(45, 45, 45)'],
+    [0.2, 'rgb(64, 64, 64)'],
+    [0.25, 'rgb(82, 82, 82)'],
+    [0.3, 'rgb(94, 94, 94)'],
+    [0.35, 'rgb(108, 108, 108)'],
+    [0.4, 'rgb(122, 122, 122)'],
+    [0.45, 'rgb(136, 136, 136)'],
+    [0.5, 'rgb(150, 150, 150)'],
+    [0.55, 'rgb(165, 165, 165)'],
+    [0.6, 'rgb(181, 181, 181)'],
+    [0.65, 'rgb(194, 194, 194)'],
+    [0.7, 'rgb(206, 206, 206)'],
+    [0.75, 'rgb(217, 217, 217)'],
+    [0.8, 'rgb(226, 226, 226)'],
+    [0.85, 'rgb(235, 235, 235)'],
+    [0.9, 'rgb(243, 243, 243)'],
+    [0.95, 'rgb(249, 249, 249)'],
+    [1.0, 'rgb(255, 255, 255)']]
+
 
 class NodeType():
     # Bit pairs for different types of space (flat, sloped, stairs, elevator, escalator)
@@ -85,8 +110,9 @@ class Node:
 
 
 class Space:
-    def __init__(self, units="feet"):
+    def __init__(self, image=[], units="feet"):
         self.__nodes = {}
+        self.image = image
         self.units = units
 
     def get_nodes(self):
@@ -258,7 +284,10 @@ class Space:
         )
 
         # Create the 3D plot
-        fig = go.Figure(data=[scatter, lines, plane])
+        data=[scatter, lines, plane]
+        if len(self.image) > 0:
+            data.append(self.image)
+        fig = go.Figure(data=data)
 
         # Customize the layout
         fig.update_layout(
