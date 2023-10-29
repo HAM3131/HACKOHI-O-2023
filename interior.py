@@ -410,14 +410,14 @@ class Space:
             node_type = node.get_type()
             if (i == 0):
                 direction = space.get_intermediate_direction(name, path[1])
-                route += f"First, start off facing the {direction}.\n"
+                route += f"First, start off facing the {direction}.<br>"
             if (i == len(path)-1):
                 route += "You have arrived at your destination!"
                 return route
             elif (node_type == NodeType.ROOM):
-                route += f"Go to {space.get_node(path[i+1]).print(path)}.\n"
+                route += f"Go to {space.get_node(path[i+1]).print(path)}.<br>"
                 if (i > 1):
-                    route += f"\tIt should be {space.node_distance(path[i-1], path[i+1], True)} {space.units} to your {space.get_intermediate_direction(name, path[i+1])}.\n"
+                    route += f"\tIt should be {space.node_distance(path[i-1], path[i+1], True)} {space.units} to your {space.get_intermediate_direction(name, path[i+1])}.<br>"
             elif (node_type == NodeType.STAIRS):
                 if (space.get_node(path[i-1]).get_type() != NodeType.STAIRS):
                     flights = 0
@@ -427,9 +427,9 @@ class Space:
                         flights += 1
                         next_node = space.get_node(path[i+1+flights])
                     if flights > 0:
-                        route += f"Head {direction} {flights} flights of stairs to {next_node.print(path)} in {space.get_node(path[i+flights]).print(path)}.\n"
+                        route += f"Head {direction} {flights} flights of stairs to {next_node.print(path)} in {space.get_node(path[i+flights]).print(path)}.<br>"
                     else: 
-                        route += f"Go to {next_node.print(path)}.\n"
+                        route += f"Go to {next_node.print(path)}.<br>"
             elif (node_type == NodeType.ELEVATOR):
                 if (space.get_node(path[i-1]).get_type() != NodeType.ELEVATOR or space.get_node(path[i-1]).get_type() != NodeType.ELEVATOR):
                     floors = 0
@@ -440,13 +440,13 @@ class Space:
                             next_node = space.get_node(path[i+1+floors])
                     if (not space.get_node(path[i-1]).get_type() == NodeType.ELEVATOR):
                         plural = "s" if floors > 1 else ""
-                        route += f"Go {floors} floor{plural} {direction} the elevator to get to {space.get_node(path[i+1]).print(path)}.\n"
+                        route += f"Go {floors} floor{plural} {direction} the elevator to get to {space.get_node(path[i+1]).print(path)}.<br>"
                     else:
-                        route += f"Exit the elevator towards {space.get_node(path[i+1]).print(path)}.\n"
+                        route += f"Exit the elevator towards {space.get_node(path[i+1]).print(path)}.<br>"
             elif (node_type == NodeType.ESCALATOR):
-                route += f"Go up {node.print(path)}.\n"
+                route += f"Go up {node.print(path)}.<br>"
             elif (node_type == NodeType.DOOR):
-                route += f"Go through {node.print(path)}.\n"
+                route += f"Go through {node.print(path)}.<br>"
             elif (node_type == NodeType.HALLWAY):
                 if (not space.get_node(path[i-1]).get_type() == NodeType.HALLWAY or space.hallway_is_intersection(name)):
                     direction = space.get_clock_direction(path[i-1], name, path[i+1])
@@ -461,12 +461,12 @@ class Space:
                         else:
                             hallway_steps += 1
                             next_node = space.get_node(path[i+1+hallway_steps])
-                    route += f"Turn to your {direction} and head straight through {node.print(path)} for {round(distance, -2)} {space.units}.\n"
+                    route += f"Turn to your {direction} and head straight through {node.print(path)} for {round(distance, -2)} {space.units}.<br>"
             elif (node_type == NodeType.EXIT):
-                route += f"Exit through {node.print(path)}.\n"
+                route += f"Exit through {node.print(path)}.<br>"
             elif (node_type == NodeType.OUTSIDE):
-                route += f"Go through {node.print(path)} to {space.get_node(path[i+1].print(path))}.\n"
-                route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
+                route += f"Go through {node.print(path)} to {space.get_node(path[i+1].print(path))}.<br>"
+                route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.<br>"
             elif (node_type == NodeType.OTHER):
                 route += ''
         return route
