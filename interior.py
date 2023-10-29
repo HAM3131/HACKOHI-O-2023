@@ -1,5 +1,6 @@
 from math import sqrt, floor, atan2, degrees
 import plotly.graph_objects as go
+from plotly.io import to_html
 import random
 import copy
 
@@ -219,13 +220,15 @@ class Space:
         # Initialize lists to store node and edge coordinates
         x_nodes, y_nodes, z_nodes = [], [], []
         x_edges, y_edges, z_edges = [], [], []
+        node_names = []
 
         # Populate node coordinates
-        for _, node in self.__nodes.items():
+        for name, node in self.__nodes.items():
             x, y, z = node.get_position()
             x_nodes.append(x)
             y_nodes.append(y)
             z_nodes.append(z)
+            node_names.append(name)
 
         # Populate edge coordinates
         for _, node1 in self.__nodes.items():
@@ -237,7 +240,7 @@ class Space:
                 z_edges.extend([z1, z2, None])
 
         # Create a scatter plot for nodes with blue color
-        scatter = go.Scatter3d(x=x_nodes, y=y_nodes, z=z_nodes, mode='markers', marker=dict(size=8, color='blue'))
+        scatter = go.Scatter3d(x=x_nodes, y=y_nodes, z=z_nodes, mode='markers', marker=dict(size=8, color='blue'),text=node_names)
 
         # Create a line plot for edges with white color
         lines = go.Scatter3d(x=x_edges, y=y_edges, z=z_edges, mode='lines', line=dict(color='white'))
@@ -285,7 +288,7 @@ class Space:
         scene_camera=dict(eye=dict(x=1.5, y=1.5, z=1.5))  # Adjust camera
     )
 
-        fig.show()
+        return to_html(fig, full_html=False, config={'responsive': False})
 
     def plot_space_highlight(self, highlight_nodes):
         # Initialize lists to store node and edge coordinates
@@ -366,7 +369,7 @@ class Space:
             scene_camera=dict(eye=dict(x=1.5, y=1.5, z=1.5))
         )
 
-        fig.show()
+        return to_html(fig, full_html=False, config={'responsive': False})
 
     def path_to_string(self, path):
         space = self
