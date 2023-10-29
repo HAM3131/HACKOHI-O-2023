@@ -70,33 +70,31 @@ def quickCon(space, a, b):
     space.add_connection(a,b)
 
 
-testSpace2 = Space()
-for k in range(2):
-    for i in range(100):
-        for j in range(100):
-            if i == 33 and j == 66:
-                testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k,'type':NodeType.ELEVATOR,'mult':1.5})
-            else:
-                if i*j % 7 == 5:
-                    testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k, 'type':NodeType.OTHER}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+if __name__ == '__main__':
+    testSpace2 = Space()
+    for k in range(2):
+        for i in range(100):
+            for j in range(100):
+                if i == 33 and j == 66:
+                    testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k,'type':NodeType.ELEVATOR,'mult':1})
                 else:
-                    testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k, 'type':NodeType.HALLWAY}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+                    if i*j % 5 == 3:
+                        testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k, 'type':NodeType.OTHER}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+                    else:
+                        testSpace2.add_node(str(i) + "," + str(j)+','+str(k), {'x':i,'y':j,'z':k, 'type':NodeType.HALLWAY}) #(70-np.sqrt((i-50)**2+(j-50)**2))/50
+        for i in range(100):
+            for j in range(100):
+                if i > 0:
+                    quickCon(testSpace2,str(i-1)+','+str(j)+','+str(k),str(i)+','+str(j)+','+str(k))
+                if j > 0:
+                    quickCon(testSpace2,str(i)+','+str(j-1)+','+str(k),str(i)+','+str(j)+','+str(k))
 
-
-    for i in range(100):
-        for j in range(100):
-            if i > 0:
-                quickCon(testSpace2,str(i-1)+','+str(j)+','+str(k),str(i)+','+str(j)+','+str(k))
-            if j > 0:
-                quickCon(testSpace2,str(i)+','+str(j-1)+','+str(k),str(i)+','+str(j)+','+str(k))
-
-if __name__ == 'main':
     quickCon(testSpace2, '33,66,0','33,66,1')
     quickCon(testSpace2, '98,3,0','98,3,1')
 
-    #path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
-    #testSpace2.plot_space_highlight(path[0])
+    path = pathFindingAlgorithm(testSpace2, "0,0,0", "99,99,1")
+    testSpace2.plot_space_highlight(path[0])
 
-    testSpace3 = blacklistedSpaceCopy(testSpace2, [NodeType.OTHER])
-    path2 = pathFindingAlgorithm(testSpace3, "0,0,0", "99,99,1")
-    testSpace3.plot_space_highlight(path2[0])
+    #testSpace3 = blacklistedSpaceCopy(testSpace2, [NodeType.OTHER])
+    #path2 = pathFindingAlgorithm(testSpace3, "0,0,0", "99,99,1")
+    #testSpace3.plot_space_highlight(path2[0])

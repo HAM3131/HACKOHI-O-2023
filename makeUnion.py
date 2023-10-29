@@ -42,7 +42,7 @@ for key,val in data.items():
 # Floor 2
 
 unionSpace.add_connection('Floor 2 West Stairs', 'F2NH-F2WH')
-unionSpace.add_connection('F2NH-F2WH', 'Floor 2 North Elevators')
+unionSpace.add_connection('F2NH-F2WH', 'Floor 2 North Elevator')
 unionSpace.add_connection('F2NH-F2WH', 'F2NH-AGB H')
 unionSpace.add_connection('AGB D', 'F2NH-AGB H')
 unionSpace.add_connection('AGB D', 'Archie M. Griffin Grand Ballroom')
