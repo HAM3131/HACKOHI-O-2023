@@ -97,10 +97,14 @@ class Space:
             self.__nodes[name] = Node(name, data)
 
     def remove_node(self, name):
+        if not name in self.__nodes:
+            print("Error: Attempted to remove nonexistent node", name)
+            return
         remNode = self.get_node(name)
         connections = [x for x in remNode.get_connections().keys()]
         for connection in connections:
             self.remove_connection(name, connection)
+        del self.__nodes[name]
 
 
     def add_connection(self, name1, name2):
@@ -424,5 +428,4 @@ def blacklistedSpaceCopy(mainSpace, blacklist):
             removeList.append(nodeName)
     for remNode in removeList:
         newSpace.remove_node(remNode)
-    print(newSpace.get_nodes().keys())
     return newSpace
