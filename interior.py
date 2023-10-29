@@ -287,7 +287,7 @@ class Space:
         plot_bgcolor='black',  # Black grid background
         scene_camera=dict(eye=dict(x=1.5, y=1.5, z=1.5))  # Adjust camera
     )
-
+        fig.update_layout(height=800, width=1000)
         return to_html(fig, full_html=False, config={'responsive': False})
 
     def plot_space_highlight(self, highlight_nodes):
@@ -369,6 +369,7 @@ class Space:
             scene_camera=dict(eye=dict(x=1.5, y=1.5, z=1.5))
         )
 
+        fig.update_layout(height=800, width=1000)
         return to_html(fig, full_html=False, config={'responsive': False})
 
     def path_to_string(self, path):
