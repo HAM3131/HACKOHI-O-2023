@@ -48,31 +48,31 @@ def gen_base_html(space):
     <button onclick="generatePath()">Generate Path</button>
 """
     html += space.plot_space()
-    html += """
+    html += f"""
 
     <script>
-        function generatePath() {
+        function generatePath() {{
             const start_node = $('#start_node').val();
             const end_node = $('#end_node').val();
-            const blacklist = [];
-
-            if ($('#blacklist_room').is(":checked")) {
-                blacklist.push("room");
-            }
-            if ($('#blacklist_stairs').is(":checked")) {
-                blacklist.push("stairs");
-            }
-
-            $.ajax({
+            const blacklist = [];"""
+    for name in interior.NodeType.types:
+        html += f"""
+            if ($('#blacklist_{name}').is(":checked")) {{
+                blacklist.push("{name}");
+            }}
+            """
+            
+    html += f"""
+            $.ajax({{
                 url: '/get_path',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ start_node, end_node, blacklist }),
-                success: function(response) {
+                data: JSON.stringify({{ start_node, end_node, blacklist }}),
+                success: function(response) {{
                     window.open(response.redirect, '_blank');
-                }
-            });
-        }
+                }}
+            }});
+        }}
     </script>
 </body>
 </html>
