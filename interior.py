@@ -410,7 +410,7 @@ class Space:
             node_type = node.get_type()
             if (i == 0):
                 direction = space.get_intermediate_direction(name, path[1])
-                route += f"First, start off facing to the {direction}.\n"
+                route += f"First, start off facing the {direction}.\n"
             if (i == len(path)-1):
                 route += "You have arrived at your destination!"
                 return route

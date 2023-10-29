@@ -11,7 +11,7 @@ def gen_base_html(space):
     <title>Space Navigator</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
+<body style="background-color: black; color: white;">
 """
     html += """
 <!-- Dropdown for selecting start and end nodes -->
@@ -37,7 +37,7 @@ def gen_base_html(space):
     </select>
 
     <!-- Checkbox for blacklisting NodeTypes -->
-    <div>Blacklist room types</div>
+    <div>Blacklist node types</div>
 """
     for name in interior.NodeType.types:
         html += f"""
@@ -94,7 +94,7 @@ def gen_result_html(space, path):
         }}
     </script>
 </head>
-<body>
+<body style="background-color: black; color: white;">
     <h1>Shortest Path</h1>
     <p>{" -> ".join(path)}</p>
     <p>{space.path_to_string(path)}</p>
