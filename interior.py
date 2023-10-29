@@ -472,6 +472,7 @@ class Space:
         return route
 
 def blacklistedSpaceCopy(mainSpace, blacklist):
+    print(blacklist)
     newSpace = copy.deepcopy(mainSpace)
     nodeList = newSpace.get_nodes()
     removeList = []

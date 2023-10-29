@@ -7,9 +7,11 @@ import numpy as np
 x = np.linspace(-93,732, 825)
 y = np.linspace(-83, 661, 745)
 X, Y = np.meshgrid(x,y)
-z = -(X+Y)/(X+Y)/20.0
+z = -(X+Y)/(X+Y)*.05
+z2 = (X+Y)/(X+Y)*(.95)
 
 img = io.imread('UnionFloor1V2.jpg',)
+img2 = io.imread('UnionFloor2.jpg',)
 
 pl_grey =[[0.0, 'rgb(0, 0, 0)'],
     [0.05, 'rgb(13, 13, 13)'],
@@ -34,9 +36,15 @@ pl_grey =[[0.0, 'rgb(0, 0, 0)'],
     [1.0, 'rgb(255, 255, 255)']]
 
 surfcolor = np.fliplr(img[:,:,0])
+surfcolor2 = np.fliplr(img2[:,:,0])
 
 surf = go.Surface(x=x, y=y, z=z,
                   surfacecolor=surfcolor,
+                  colorscale=pl_grey,
+                  showscale=False)
+
+surf2 = go.Surface(x=x, y=y, z=z2,
+                  surfacecolor=surfcolor2,
                   colorscale=pl_grey,
                   showscale=False)
 
@@ -51,7 +59,7 @@ surf = go.Surface(x=x, y=y, z=z,
 
 
 
-unionSpace = Space(image=[surf])
+unionSpace = Space(image=[surf, surf2])
 # {'x':,'y':,'z':,'type':NodeType.}
 data = {'East Main Atrium': {'x':333,'y':233,'z':0,'type':NodeType.ROOM},
         'West Main Atrium': {'x':333,'y':372,'z':0,'type':NodeType.ROOM},
