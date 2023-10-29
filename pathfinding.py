@@ -18,7 +18,6 @@ def addBinaryValue(binList, bVal, rVal, min, max):
         return addBinaryValue(binList, bVal, rVal, checkLocation, checkLocation)
 
 
-
 def pathFindingAlgorithm(nodeSpace, startNode, endNode):
     nodeList = nodeSpace.get_nodes()
     unvisitedNodes = [(0,startNode)]

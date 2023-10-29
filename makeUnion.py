@@ -33,7 +33,7 @@ rAngle = -1.436
 for key,val in data.items():
     oldData = copy.copy(val)
     newData = copy.copy(val)
-    print(newData)
+    # print(newData)
     newData['x'] = np.cos(rAngle)*oldData['x'] + np.sin(rAngle)*-oldData['y']
     newData['y'] = -np.sin(rAngle)*oldData['x'] + np.cos(rAngle)*-oldData['y']
     unionSpace.add_node(key, newData)
@@ -73,7 +73,5 @@ unionSpace.add_connection('West Main Atrium', 'Floor 1 North Elevator')
 unionSpace.add_connection('Floor 1 West Stairs', 'Floor 2 West Stairs')
 unionSpace.add_connection('Floor 1 North Elevator', 'Floor 2 North Elevator')
 
-
-path = pathFindingAlgorithm(unionSpace, "East Main Exit", "Danny Price Student Lounge")
-unionSpace.plot_space_highlight(path[0])
-
+# path = pathFindingAlgorithm(unionSpace, "East Main Exit", "Danny Price Student Lounge")
+# unionSpace.plot_space_highlight(path[0])

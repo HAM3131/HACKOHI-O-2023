@@ -14,6 +14,7 @@ class NodeType():
     EXIT        = "exit"
     OUTSIDE     = "outside"
     OTHER       = "other"
+    types = [ROOM, STAIRS, ELEVATOR, ESCALATOR, DOOR, HALLWAY, EXIT, OUTSIDE, OTHER]
 
 class Node:
     def __init__(self, name, data):
@@ -21,7 +22,7 @@ class Node:
         self.__data = data
         self.__connections = {}
 
-    def print(self):
+    def print(self, path):
         type = self.get_type()
         if (type == NodeType.ROOM):
             return f"{self.__name}"
@@ -32,15 +33,18 @@ class Node:
         elif (type == NodeType.ESCALATOR):
             return f"the {self.__name}"
         elif (type == NodeType.DOOR):
-            return f"the {self.__name}"
+            i = path.index(self.__name)
+            if (i+1 < len(path)):
+                return f'the door to {path[i+1]}'
+            return f"{self.__name}"
         elif (type == NodeType.HALLWAY):
-            return f"the {self.__name}"
+            return f"the {self.__data['hname']}"
         elif (type == NodeType.EXIT):
             return f"the {self.__name}"
         elif (type == NodeType.OUTSIDE):
-            return f"{self.name}"
+            return f"{self.__name}"
         elif (type == NodeType.OTHER):
-            return f"{self.name}"
+            return f"{self.__name}"
     
     def add_connection(self, name, data):
         if (name in self.__connections):
@@ -137,7 +141,7 @@ class Space:
     
     def node_distance(self, name1, name2, disable_warning=False):
         if (not (self.__nodes[name1].connection_exists(name2) or self.__nodes[name2].connection_exists(name1)) and not disable_warning):
-            print("[*] You are calculating the distance between two nodes which aren't connected")
+            print(f"[*] You are calculating the distance between two nodes which aren't connected - {name1} and {name2}")
         (x1, y1, z1) = self.__nodes[name1].get_position()
         (x2, y2, z2) = self.__nodes[name2].get_position()
         (dx, dy, dz) = (x2-x1, y2-y1, z2-z1)
@@ -160,7 +164,7 @@ class Space:
         dx = x2 - x1
         dy = y2 - y1
 
-        angle = (180 / 3.14159) * (atan2(dy, dx) % (2 * 3.14159))
+        angle = ((180 / 3.14159) * (atan2(dy, dx) % (2 * 3.14159)) - 90) % 360
 
         if 22.5 <= angle < 67.5:
             return "Northeast"
@@ -188,9 +192,9 @@ class Space:
         x3, y3, _ = self.__nodes[node3_name].get_position()
 
         angle1 = degrees(atan2(y2 - y1, x2 - x1)) % 360
-        angle2 = degrees(atan2(y3 - y1, x3 - x1)) % 360
+        angle2 = degrees(atan2(y3 - y2, x3 - x2)) % 360
 
-        clock_angle = (angle2 - angle1 + 360) % 360
+        clock_angle = (angle1 - angle2) % 360
         clock_direction = round(clock_angle / 30) % 12
 
         if clock_direction == 0:
@@ -360,60 +364,63 @@ class Space:
 
         fig.show()
 
-def path_to_string(space, path):
-    route = ""
-    for i, name in enumerate(path):
-        node = space.get_node(name)
-        node_type = node.get_type()
-        if (i == 0):
-            direction = space.get_intermediate_direction(name, path[1])
-            route += f"First, face {direction} towards {space.get_node(path[1]).print()}.\n"
-        if (i == len(path)-1):
-            route += "You have arrived at your destination!"
-
-        if (node_type == NodeType.ROOM):
-            route += f"Enter {node.print()} and find {space.get_node(path[i+1]).print()}.\n"
-            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
-        elif (node_type == NodeType.STAIRS):
-            if (space.get_node(path[i-1]).get_type != NodeType.STAIRS):
-                flights = 0
-                direction = "up" if (space.node_y_distance(name, path[i+1]) > 0) else "down"
-                next_node = space.get_node(path[i+1+flights])
-                while (next_node.get_type() == NodeType.STAIRS):
-                    flights += 1
-                    next_node = path[i+1+flights]
-                if flights > 0:
-                    route += f"Head {direction} {flights} flights of stairs to {next_node.print()} in {space.get_node(path[i+flights]).print()}.\n"
-                else: 
-                    route += f"Go to {next_node.print()}.\n"
-        elif (node_type == NodeType.ELEVATOR):
-            route += f"Use {node.print()} to get to {space.get_node(path[i+1])}.\n"
-        elif (node_type == NodeType.ESCALATOR):
-            route += f"Go up {node.print()}.\n"
-        elif (node_type == NodeType.DOOR):
-            route += f"Go through {node.print()} to {space.get_node(path[i+1]).print()}"
-        elif (node_type == NodeType.HALLWAY):
-            if (not space.get_node(path[i-1]).get_type == NodeType.HALLWAY or space.hallway_is_intersection(name)):
-                direction = space.get_clock_direction(path[i-1], name, path[i+1])
-                hallway_steps = 0
-                next_node = space.get_node(path[i+1+hallway_steps])
-                while (next_node == NodeType.HALLWAY):
-                    intersection = space.hallway_is_intersection(path[i+1+hallway_steps])
-                    if (intersection):
-                        break
-                    else:
-                        hallway_steps += 1
-                        next_node = space.get_node(path[i+1+hallway_steps])
-                route += f"Turn to your {direction} and head straight through {node.print()} for {space.node_distance(name, path[i+hallway_steps])} {space.units}.\n"
-        elif (node_type == NodeType.EXIT):
-            route += f"Exit through {node.print()}.\n"
-        elif (node_type == NodeType.OUTSIDE):
-            route += f"Go through {node.print()} to {space.get_node(path[i+1].print())}.\n"
-            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
-        elif (node_type == NodeType.OTHER):
-            route += f"Use {node.print} to reach {{space.get_node(path[i+1].print())}}.\n"
-            route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
-    return route
+    def path_to_string(self, path):
+        space = self
+        route = ""
+        for i, name in enumerate(path):
+            node = space.get_node(name)
+            node_type = node.get_type()
+            if (i == 0):
+                direction = space.get_intermediate_direction(name, path[1])
+                route += f"First, face {direction} towards {space.get_node(path[1]).print(path)}.\n"
+            if (i == len(path)-1):
+                route += "You have arrived at your destination!"
+                return route
+            elif (node_type == NodeType.ROOM):
+                route += f"Find {space.get_node(path[i+1]).print(path)}.\n"
+                if (i > 1):
+                    route += f"\tIt should be {space.node_distance(path[i-1], path[i+1], True)} {space.units} to your {space.get_intermediate_direction(name, path[i+1])}.\n"
+            elif (node_type == NodeType.STAIRS):
+                if (space.get_node(path[i-1]).get_type != NodeType.STAIRS):
+                    flights = 0
+                    direction = "up" if (space.node_y_distance(name, path[i+1]) > 0) else "down"
+                    next_node = space.get_node(path[i+1+flights])
+                    while (next_node.get_type() == NodeType.STAIRS):
+                        flights += 1
+                        next_node = path[i+1+flights]
+                    if flights > 0:
+                        route += f"Head {direction} {flights} flights of stairs to {next_node.print(path)} in {space.get_node(path[i+flights]).print(path)}.\n"
+                    else: 
+                        route += f"Go to {next_node.print(path)}.\n"
+            elif (node_type == NodeType.ELEVATOR):
+                route += f"Use {node.print(path)} to get to {space.get_node(path[i+1])}.\n"
+            elif (node_type == NodeType.ESCALATOR):
+                route += f"Go up {node.print(path)}.\n"
+            elif (node_type == NodeType.DOOR):
+                route += f"Go through {node.print(path)} to {space.get_node(path[i+1]).print(path)}.\n"
+            elif (node_type == NodeType.HALLWAY):
+                if (not space.get_node(path[i-1]).get_type() == NodeType.HALLWAY or space.hallway_is_intersection(name)):
+                    direction = space.get_clock_direction(path[i-1], name, path[i+1])
+                    hallway_steps = 0
+                    distance = 0
+                    next_node = space.get_node(path[i+1+hallway_steps])
+                    while (next_node.get_type() == NodeType.HALLWAY):
+                        distance += space.node_distance(path[i+hallway_steps], path[i+1+hallway_steps])
+                        intersection = space.hallway_is_intersection(path[i+1+hallway_steps])
+                        if (intersection):
+                            break
+                        else:
+                            hallway_steps += 1
+                            next_node = space.get_node(path[i+1+hallway_steps])
+                    route += f"Turn to your {direction} and head straight through {node.print(path)} for {distance} {space.units}.\n"
+            elif (node_type == NodeType.EXIT):
+                route += f"Exit through {node.print(path)}.\n"
+            elif (node_type == NodeType.OUTSIDE):
+                route += f"Go through {node.print(path)} to {space.get_node(path[i+1].print(path))}.\n"
+                route += f"\tIt should be {space.node_distance(path[i-1], path[i+1])} {space.units} to your {space.get_clock_direction(path[i-1], name, path[i+1])}.\n"
+            elif (node_type == NodeType.OTHER):
+                route += ''
+        return route
 
 def blacklistedSpaceCopy(mainSpace, blacklist):
     newSpace = copy.deepcopy(mainSpace)
