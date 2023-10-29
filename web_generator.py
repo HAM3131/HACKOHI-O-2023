@@ -86,6 +86,13 @@ def gen_result_html(space, path):
 <html>
 <head>
     <title>Path Result</title>
+    <script>
+        function speak(text) {{
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            synth.speak(utterance);
+        }}
+    </script>
 </head>
 <body>
     <h1>Shortest Path</h1>
@@ -94,5 +101,22 @@ def gen_result_html(space, path):
     {space.plot_space_highlight(path)}
 </body>
 </html>
+"""
+    return html
+
+def gen_speak_button(text):
+    # Escape single and double quotes in the text
+    escaped_text = text.replace("'", "\\'").replace('"', '\\"')
+    
+    # Generate HTML with embedded JavaScript
+    html = f"""
+<button onclick="speak('{escaped_text}')">🔊 Speak</button>
+<script>
+    function speak(text) {{
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(text);
+        synth.speak(utterance);
+    }}
+</script>
 """
     return html
