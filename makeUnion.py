@@ -4,12 +4,12 @@ import plotly.graph_objects as go
 from skimage import io
 import numpy as np
 
-x = np.linspace(0,640, 640)
-y = np.linspace(0, 578, 578)
+x = np.linspace(-93,732, 825)
+y = np.linspace(-83, 661, 745)
 X, Y = np.meshgrid(x,y)
-z = (X+Y)/(2+np.cos(X)*np.sin(Y))*0
+z = -(X+Y)/(X+Y)/20.0
 
-img = io.imread('UnionFloor1.jpg',)
+img = io.imread('UnionFloor1V2.jpg',)
 
 pl_grey =[[0.0, 'rgb(0, 0, 0)'],
     [0.05, 'rgb(13, 13, 13)'],

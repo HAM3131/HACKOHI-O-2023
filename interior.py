@@ -363,7 +363,10 @@ class Space:
         lines_highlight = go.Scatter3d(x=x_highlight_edges, y=y_highlight_edges, z=z_highlight_edges, mode='lines', line=dict(color='yellow'))
 
         # Create the 3D plot
-        fig = go.Figure(data=[scatter, lines, scatter_highlight, lines_highlight])
+        data=[scatter, lines, scatter_highlight, lines_highlight]
+        if len(self.image) > 0:
+            data += self.image
+        fig = go.Figure(data=data)
 
         # Customize the layout
         fig.update_layout(
