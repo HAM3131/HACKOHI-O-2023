@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from plotly.io import to_html
 from skimage import io
 import random
-from numpy import np
+import numpy as np
 import copy
 
 pl_grey =[[0.0, 'rgb(0, 0, 0)'],
@@ -274,19 +274,10 @@ class Space:
         # Create a line plot for edges with white color
         lines = go.Scatter3d(x=x_edges, y=y_edges, z=z_edges, mode='lines', line=dict(color='white'))
 
-        # Create a Surface plot for the Z-plane
-        plane = go.Surface(
-            x=[0, 10],
-            y=[0, 10],
-            z=[[-0.5,-0.5],[-0.5,-0.5]],
-            colorscale=[[0, 'gray'], [1, 'gray']],  # set plane color to gray
-            showscale=False  # hide the color scale
-        )
-
         # Create the 3D plot
-        data=[scatter, lines, plane]
+        data=[scatter, lines]
         if len(self.image) > 0:
-            data.append(self.image)
+            data += self.image
         fig = go.Figure(data=data)
 
         # Customize the layout

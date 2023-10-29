@@ -51,7 +51,7 @@ surf = go.Surface(x=x, y=y, z=z,
 
 
 
-unionSpace = Space(image=surf)
+unionSpace = Space(image=[surf])
 # {'x':,'y':,'z':,'type':NodeType.}
 data = {'East Main Atrium': {'x':333,'y':233,'z':0,'type':NodeType.ROOM},
         'West Main Atrium': {'x':333,'y':372,'z':0,'type':NodeType.ROOM},
