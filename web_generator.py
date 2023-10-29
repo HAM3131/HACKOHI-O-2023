@@ -19,7 +19,7 @@ def gen_base_html(space):
     <select id="start_node">
 """
     for node in space.get_nodes().keys():
-        if space.get_node(node).get_type() == interior.NodeType.ROOM:
+        if space.get_node(node).get_type() == interior.NodeType.ROOM or space.get_node(node).get_type() == interior.NodeType.EXIT:
             html += f"""
         <option value="{node}">{node}</option>
 """
@@ -29,7 +29,7 @@ def gen_base_html(space):
     <select id="end_node">
 """
     for node in space.get_nodes().keys():
-        if space.get_node(node).get_type() == interior.NodeType.ROOM:
+        if space.get_node(node).get_type() == interior.NodeType.ROOM or space.get_node(node).get_type() == interior.NodeType.EXIT:
             html += f"""
         <option value="{node}">{node}</option>
 """
@@ -46,10 +46,6 @@ def gen_base_html(space):
     html += """
     <!-- Button to generate path -->
     <button onclick="generatePath()">Generate Path</button>
-
-    <!-- Div to display the path -->
-    <div id="path"></div>
-
 """
     html += space.plot_space()
     html += """
@@ -73,11 +69,29 @@ def gen_base_html(space):
                 contentType: 'application/json',
                 data: JSON.stringify({ start_node, end_node, blacklist }),
                 success: function(response) {
-                    $('#path').html("Shortest Path: " + response.path.join(" -> "));
+                    window.open(response.redirect, '_blank');
                 }
             });
         }
     </script>
+</body>
+</html>
+"""
+    return html
+
+
+def gen_result_html(space, path):
+    html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Path Result</title>
+</head>
+<body>
+    <h1>Shortest Path</h1>
+    <p>{" -> ".join(path)}</p>
+    <p>{space.path_to_string(path)}</p>
+    {space.plot_space_highlight(path)}
 </body>
 </html>
 """
