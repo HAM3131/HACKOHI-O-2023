@@ -4,8 +4,8 @@ import plotly.graph_objects as go
 from skimage import io
 import numpy as np
 
-x = np.linspace(0,5, 640)
-y = np.linspace(5, 10, 578)
+x = np.linspace(0,640, 640)
+y = np.linspace(0, 578, 578)
 X, Y = np.meshgrid(x,y)
 z = (X+Y)/(2+np.cos(X)*np.sin(Y))*0
 
