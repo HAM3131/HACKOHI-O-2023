@@ -10,7 +10,6 @@ X, Y = np.meshgrid(x,y)
 z = (X+Y)/(2+np.cos(X)*np.sin(Y))*0
 
 img = io.imread('UnionFloor1.jpg',)
-io.imshow(img)
 
 pl_grey =[[0.0, 'rgb(0, 0, 0)'],
     [0.05, 'rgb(13, 13, 13)'],
@@ -52,7 +51,7 @@ surf = go.Surface(x=x, y=y, z=z,
 
 
 
-unionSpace = Space(image=surf)
+unionSpace = Space(image=[surf])
 # {'x':,'y':,'z':,'type':NodeType.}
 data = {'East Main Atrium': {'x':333,'y':233,'z':0,'type':NodeType.ROOM},
         'West Main Atrium': {'x':333,'y':372,'z':0,'type':NodeType.ROOM},
